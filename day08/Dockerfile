@@ -1,11 +1,8 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
-WORKDIR /app
+FROM gradle:7.2.0-jdk17 as BASE
+WORKDIR /src
+COPY ./ .
+RUN gradle build
 
-COPY * ./
-RUN dotnet restore
-RUN dotnet publish -c Release -o out
-
-FROM mcr.microsoft.com/dotnet/runtime:5.0
-WORKDIR /app
-COPY --from=build-env /app/out .
-ENTRYPOINT [ "dotnet", "aoc.dll" ]
+FROM openjdk:17
+COPY --from=BASE /src/app/build/libs/app.jar /app.jar
+CMD java -jar /app.jar

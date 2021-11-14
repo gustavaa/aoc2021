@@ -1,8 +1,8 @@
-FROM gcc:4.9 as BASE
+FROM gradle:7.2.0-jdk17 as BASE
 WORKDIR /src
 COPY ./ .
-RUN gcc -static -o aoc aoc.c
+RUN gradle build
 
-FROM alpine:latest
-COPY --from=BASE /src/aoc /aoc
-CMD ["./aoc"]
+FROM openjdk:17
+COPY --from=BASE /src/app/build/libs/app.jar /app.jar
+CMD java -jar /app.jar

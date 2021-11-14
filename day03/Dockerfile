@@ -1,8 +1,8 @@
-FROM golang:1.17-alpine as BASE
+FROM gradle:7.2.0-jdk17 as BASE
 WORKDIR /src
 COPY ./ .
-RUN go build -o /bin/aoc
+RUN gradle build
 
-FROM scratch
-COPY --from=BASE /bin/aoc /bin/aoc
-ENTRYPOINT [ "/bin/aoc" ]
+FROM openjdk:17
+COPY --from=BASE /src/app/build/libs/app.jar /app.jar
+CMD java -jar /app.jar
