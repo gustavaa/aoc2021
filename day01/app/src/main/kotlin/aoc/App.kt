@@ -3,22 +3,35 @@
  */
 package aoc
 
-class App {
-    fun getSolutionPart1(): String {
-        return "1337"
-    }
+import java.io.File
 
-    fun getSolutionPart2(): String {
-        return "42"
+fun main() {
+    val input = File("input.txt").readLines().map { it.toInt() }
+    val answer = when (System.getenv("part")) {
+        "part2" -> solutionPart2(input)
+        else -> solutionPart1(input)
     }
+    println("Kotlin")
+    println(answer)
+}
 
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            when (System.getenv("part") ?: "part1") {
-                "part2" -> println(App().getSolutionPart2())
-                else -> println(App().getSolutionPart1())
+fun isPrime(number: Int): Boolean =
+        (2 until number).map { it }.none { number % it == 0 }
+
+
+fun solutionPart1(input: List<Int>): Int =
+        input.reduceIndexed { index, acc, number ->
+            when {
+                isPrime(number) -> number * index + acc
+                else -> acc
             }
         }
-    }
-}
+
+fun solutionPart2(input: List<Int>) =
+        input.reduceIndexed { index, acc, number ->
+            when {
+                isPrime(number) -> acc
+                index % 2 == 0 -> acc + number
+                else -> acc - number
+            }
+        }

@@ -33,13 +33,13 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'aoc.App'
+    mainClass.set('aoc.AppKt')
 }
 
 jar {
     manifest {
         attributes(
-                'Main-Class': 'aoc.App'
+                'Main-Class': 'aoc.AppKt'
         )
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
