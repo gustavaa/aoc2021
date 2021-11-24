@@ -16,11 +16,11 @@ fun main() {
 }
 
 fun isPrime(number: Int): Boolean =
-        (2 until number).map { it }.none { number % it == 0 }
+        (2 until number).none { number % it == 0 }
 
 
 fun solutionPart1(input: List<Int>): Int =
-        input.reduceIndexed { index, acc, number ->
+        input.foldIndexed(0) { index, acc, number ->
             when {
                 isPrime(number) -> number * index + acc
                 else -> acc
