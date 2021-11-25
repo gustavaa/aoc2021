@@ -11,12 +11,11 @@ fun main() {
         "part2" -> solutionPart2(input)
         else -> solutionPart1(input)
     }
-    println("Kotlin")
     println(answer)
 }
 
 fun isPrime(number: Int): Boolean =
-        (2 until number).none { number % it == 0 }
+        (2..number / 2).none { number % it == 0 }
 
 
 fun solutionPart1(input: List<Int>): Int =
