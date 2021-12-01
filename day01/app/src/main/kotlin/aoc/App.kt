@@ -14,23 +14,21 @@ fun main() {
     println(answer)
 }
 
-fun isPrime(number: Int): Boolean =
-        (2..number / 2).none { number % it == 0 }
-
-
 fun solutionPart1(input: List<Int>): Int =
         input.foldIndexed(0) { index, acc, number ->
-            when {
-                isPrime(number) -> number * index + acc
-                else -> acc
-            }
+            if (index > 0 && input[index - 1] < number) acc + 1
+            else acc
         }
 
-fun solutionPart2(input: List<Int>) =
-        input.reduceIndexed { index, acc, number ->
-            when {
-                isPrime(number) -> acc
-                index % 2 == 0 -> acc + number
-                else -> acc - number
-            }
+const val SLIDING_WINDOW_SIZE = 3
+fun solutionPart2(input: List<Int>): Int {
+    var answer = 0
+    val windowSums = mutableListOf<Int>()
+    input.indices.forEach { index ->
+        if (index < input.size - SLIDING_WINDOW_SIZE + 1) {
+            input.subList(index, index + SLIDING_WINDOW_SIZE).sum().let { windowSums.add(it) }
+            if (index > 0 && windowSums[index - 1] < windowSums[index]) answer++
         }
+    }
+    return answer
+}
