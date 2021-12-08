@@ -7,15 +7,10 @@ data class Input(val signalPatterns: List<String>, val digitOutputValues: List<S
 
 fun main() {
     val input = File("input.txt").readLines().map { it.split("|").let { Input(it[0].split(" "), it[1].split(" ")) } }
-    when (System.getenv("part")) {"part2" -> println(getSolutionPart1(input)) else -> println(getSolutionPart2(input)) }
+    when (System.getenv("part")) {"part2" -> println(getSolutionPart2(input)) else -> println(getSolutionPart1(input)) }
 }
 
-val segmentCountToDigitMap = mapOf( 2 to 1, 4 to 4, 3 to 7, 7 to 8)
-fun getSolutionPart1(input: List<Input>): Int {
-    return input.fold(0) { acc, input ->
-        acc + input.digitOutputValues.count { segmentCountToDigitMap.containsKey(it.trim().length)}
-    }
-}
+fun getSolutionPart1(input: List<Input>): Int = input.fold(0) { acc, inputLine -> acc + inputLine.digitOutputValues.count { it.length == 2 || it.length == 4 || it.length == 3 || it.length  == 8} }
 
 fun getSolutionPart2(input: List<Input>): Int {
     var total = 0
