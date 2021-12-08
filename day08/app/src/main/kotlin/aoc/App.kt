@@ -10,7 +10,7 @@ fun main() {
     when (System.getenv("part")) {"part2" -> println(getSolutionPart2(input)) else -> println(getSolutionPart1(input)) }
 }
 
-fun getSolutionPart1(input: List<Input>): Int = input.fold(0) { acc, inputLine -> acc + inputLine.digitOutputValues.count { it.length == 2 || it.length == 4 || it.length == 3 || it.length  == 8} }
+fun getSolutionPart1(input: List<Input>): Int = input.fold(0) { acc, inputLine -> acc + inputLine.digitOutputValues.count { it.length == 2 || it.length == 4 || it.length == 3 || it.length  == 7} }
 
 fun getSolutionPart2(input: List<Input>): Int {
     var total = 0
@@ -18,7 +18,6 @@ fun getSolutionPart2(input: List<Input>): Int {
         val segments = Array(10){""}
         while (segments.any { it == "" }) {
             for (signalPattern in inputLine.signalPatterns) {
-                println(signalPattern)
                 when(signalPattern.length) {
                     2 -> segments[1] = signalPattern.toSortedSet().toString()
                     3 -> segments[7] = signalPattern.toSortedSet().toString()
