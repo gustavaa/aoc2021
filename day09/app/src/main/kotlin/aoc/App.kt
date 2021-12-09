@@ -13,7 +13,7 @@ operator fun Array<Array<Int>>.set(point: Point, value: Int) { this[point.x][poi
 
 fun getSolutionPart1(input: Array<Array<Int>>): Int = getLowPoints(input).map { input[it] + 1 }.sum()
 
-fun getSolutionPart2(input: Array<Array<Int>>): Int = getLowPoints(input).map { getBasins(it, input).size }.sortedByDescending { it }.subList(0,3).fold(1) { acc, size -> acc * size }
+fun getSolutionPart2(input: Array<Array<Int>>): Int = getLowPoints(input).map { getBasins(it, input).size }.sortedDescending().take(3).reduce(Int::times)
 
 fun getLowPoints(input: Array<Array<Int>>): List<Point> = input.flatMapIndexed { row, values -> values.mapIndexedNotNull { col, height -> if (getAdjacentPoints(Point(row, col), input).none { input[it] <= height }) Point(row, col) else null } }
 
