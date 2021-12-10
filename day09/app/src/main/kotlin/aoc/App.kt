@@ -3,7 +3,7 @@ package aoc
 import java.io.File
 
 fun main() {
-    val input = File("input.txt").readLines().map { it.split("").filter { it.isNotEmpty() }.map { it.toInt() }.toTypedArray() }.toTypedArray()
+    val input = File("input.txt").readLines().map { it.map(Character::getNumericValue).toTypedArray() }.toTypedArray()
     when (System.getenv("part")) {"part2" -> println(getSolutionPart2(input))else -> println(getSolutionPart1(input)) }
 }
 
