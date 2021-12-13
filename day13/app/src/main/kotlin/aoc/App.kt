@@ -6,8 +6,6 @@ data class Coordinate(var x: Int, var y: Int)
 enum class Axis{X, Y;}
 data class Fold(val axis: Axis, val line: Int)
 typealias Paper = Array<Array<Char>>
-operator fun Paper.get(coordinate: Coordinate) = this[coordinate.x][coordinate.y]
-operator fun Paper.set(coordinate: Coordinate, value: Char) { this[coordinate.x][coordinate.y] = value }
 fun Paper.print() = forEach { println(it.joinToString("")) }
 
 fun main() {
