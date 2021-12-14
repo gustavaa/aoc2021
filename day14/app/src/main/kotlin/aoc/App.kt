@@ -1,7 +1,6 @@
 package aoc
 
 import java.io.File
-import java.util.*
 
 fun main() {
     var startingPoint = ""
