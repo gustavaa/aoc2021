@@ -1,7 +1,6 @@
 package aoc
 
 import java.io.File
-import java.util.*
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -23,20 +22,18 @@ fun main() {
     when (System.getenv("part")) {"part2" -> println(getSolutionPart2(input)) else -> println(getSolutionPart1(input)) }
 }
 
-operator fun Element.SnailFishNumber.plus(other: Element.SnailFishNumber) = Element.SnailFishNumber(this, other)
-
-fun Element.SnailFishNumber.reduce(): Element.SnailFishNumber {
-    var result = this
+fun reduce(snailFishString: String): String {
+    var result = snailFishString
     var doneExploding = false
     var doneSplitting = false
     while (!doneExploding || !doneSplitting) {
-        result.explode().let {
+        explode(result).let {
             doneExploding = result == it
             result = it
         }
         if (!doneExploding) continue
 
-        result.split().let {
+        split(result).let {
             doneSplitting = result == it
             result = it
         }
@@ -44,18 +41,19 @@ fun Element.SnailFishNumber.reduce(): Element.SnailFishNumber {
     return result
 }
 
-fun Element.SnailFishNumber.explode(): Element.SnailFishNumber {
+val pairRegex = Regex("\\[(\\d+),(\\d+)\\]")
+val numberRegex = Regex("\\d+")
+fun explode(snailFishString: String): String {
     var levelCount = 0
-    val stringRep = this.toString()
-    stringRep.forEachIndexed { index, c ->
+    snailFishString.forEachIndexed { index, c ->
         if (c == '[') levelCount++
         if (c == ']') levelCount--
         if (levelCount == 5) {
-            var newNumber = stringRep
-            val matchToExplode = Regex("\\[([0-9]+),([0-9]+)\\]").find(stringRep,index)!!
-            val nextNumberMatch = Regex("[0-9]+").find(stringRep, matchToExplode.range.last + 1)
+            var newNumber = snailFishString
+            val matchToExplode = pairRegex.find(snailFishString,index)!!
+            val nextNumberMatch = numberRegex.find(snailFishString, matchToExplode.range.last + 1)
             nextNumberMatch?.let { newNumber = newNumber.replaceRange(nextNumberMatch.range,(matchToExplode.groupValues[2].toInt() + nextNumberMatch.value.toInt()).toString()) }
-            val prevNumberMatch = Regex("[0-9]+").findAll(stringRep.substring(0,matchToExplode.range.first - 1)).takeIf {  it.toList().isNotEmpty() }?.last()
+            val prevNumberMatch = numberRegex.findAll(snailFishString.substring(0,matchToExplode.range.first - 1)).takeIf {  it.toList().isNotEmpty() }?.last()
             var offset = 0
             prevNumberMatch?.let {
                 val mergeResult = matchToExplode.groupValues[1].toInt() + prevNumberMatch.value.toInt()
@@ -63,20 +61,20 @@ fun Element.SnailFishNumber.explode(): Element.SnailFishNumber {
                 offset = mergeResult.toString().length - prevNumberMatch.value.length
             }
             newNumber = newNumber.replaceRange((matchToExplode.range.first + offset)..(matchToExplode.range.last + offset), "0")
-            return parseSnailFishNumber(newNumber)
+            return newNumber
         }
     }
-    return this
+    return snailFishString
 }
 
-fun Element.SnailFishNumber.split(): Element.SnailFishNumber {
-    val stringRep = this.toString()
-    Regex("[0-9]+").findAll(stringRep).filter { it.value.toInt() >= 10 }.takeIf { it.toList().isNotEmpty() }?.first()?.let { match ->
+val digitLargerThan10Regex = Regex("\\d{2,}")
+fun split(snailFishString: String): String {
+    digitLargerThan10Regex.find(snailFishString)?.let { match ->
         val matchNumber = match.value.toInt()
         val newPair = Element.SnailFishNumber(floor(matchNumber.toDouble()/2).toInt(),ceil(matchNumber.toDouble()/2).toInt())
-        return parseSnailFishNumber(stringRep.replaceRange(match.range, newPair.toString()))
+        return snailFishString.replaceRange(match.range, newPair.toString())
     }
-    return this
+    return snailFishString
 }
 
 fun parseSnailFishNumber(string: String): Element.SnailFishNumber {
@@ -101,7 +99,7 @@ fun parseSnailFishNumber(string: String): Element.SnailFishNumber {
     return Element.SnailFishNumber(elements[0]!!, elements[1]!!)
 }
 
-fun String.getNextNumber(): Int = Regex("([0-9]+)").find(this)?.groupValues?.first()?.toInt()!!
+fun String.getNextNumber(): Int = numberRegex.find(this)!!.value.toInt()
 
 fun String.getIndexForNextClosingBracket(): Int {
     var levelCount = 0
@@ -113,25 +111,21 @@ fun String.getIndexForNextClosingBracket(): Int {
     return -1
 }
 
+fun addSnailFishNumbers(snailFishString1: String, snailFishString2: String): String = "[$snailFishString1,$snailFishString2]"
+
 fun getSolutionPart1(input: List<String>): Int {
     val iterator = input.listIterator()
-    var result: Element.SnailFishNumber = parseSnailFishNumber(iterator.next()).reduce()
-    while (iterator.hasNext()){
-        result += parseSnailFishNumber(iterator.next())
-        result = result.reduce()
-    }
-    return result.magnitude()
+    var result: String = reduce(iterator.next())
+    while (iterator.hasNext()) result = reduce(addSnailFishNumbers(result, iterator.next()))
+    return parseSnailFishNumber(result).magnitude()
 }
 
 fun getSolutionPart2(input: List<String>): Int {
     var max = 0
     for (x in input) {
-        val snailFishX = parseSnailFishNumber(x)
         for (y in input){
             if (x == y) continue
-            val snailFishY = parseSnailFishNumber(y)
-            ((snailFishX + snailFishY).reduce().magnitude()).let { if ( it > max) max = it }
-            ((snailFishY + snailFishX).reduce().magnitude()).let { if ( it > max) max = it }
+            ((parseSnailFishNumber(reduce(addSnailFishNumbers(x, y)))).magnitude()).let { if ( it > max) max = it }
         }
     }
     return max
